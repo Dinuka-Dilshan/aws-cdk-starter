@@ -1,11 +1,9 @@
 import { Stack, StackProps } from "aws-cdk-lib";
 import { LambdaIntegration } from "aws-cdk-lib/aws-apigateway";
 import { ITable } from "aws-cdk-lib/aws-dynamodb";
-import {
-  Code,
-  Function as LambdaFunction,
-  Runtime,
-} from "aws-cdk-lib/aws-lambda";
+import { Runtime } from "aws-cdk-lib/aws-lambda";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+//import { LlrtFunction } from "cdk-lambda-llrt";
 import { Construct } from "constructs";
 import { join } from "path";
 
@@ -17,10 +15,10 @@ export class LambdaStack extends Stack {
   public readonly lambdaIntegration: LambdaIntegration;
   constructor(scope: Construct, id: string, props: Props) {
     super(scope, id, props);
-    const lambda = new LambdaFunction(this, "helloLambda", {
+    const lambda = new NodejsFunction(this, "helloLambda", {
       runtime: Runtime.NODEJS_20_X,
-      handler: "index.handler",
-      code: Code.fromAsset(join(__dirname, "..", "..", "services")),
+      handler: "handler",
+      entry: join(__dirname, "..", "..", "services", "index.ts"),
       functionName: "HelloLambdaCDK",
       environment: {
         TABLE_NAME: props.table.tableName,
