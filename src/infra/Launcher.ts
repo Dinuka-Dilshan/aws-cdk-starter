@@ -4,6 +4,6 @@ import { DataStack } from "./stacks/DataStack";
 import { LambdaStack } from "./stacks/LambdaStack";
 
 const app = new App();
-new DataStack(app, "DataStack");
-const lambda = new LambdaStack(app, "LambdaStack");
+const dataStack = new DataStack(app, "DataStack");
+const lambda = new LambdaStack(app, "LambdaStack", { table: dataStack.table });
 new ApiStack(app, "ApiStack", { lambdaIntegration: lambda.lambdaIntegration });
