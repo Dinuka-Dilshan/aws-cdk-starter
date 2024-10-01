@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "inlineSourceMap": true,
+        "outDir": "D:\\Aws-Dev\\space_finder",
+        "rootDir": ".",
+        "sourceRoot": "D:/Aws-Dev/space_finder",
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "types": [
+            "node"
+        ]
+    }
+}

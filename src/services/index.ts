@@ -1,21 +1,26 @@
+import { ListBucketsCommand, S3Client } from "@aws-sdk/client-s3";
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyResult,
   Context,
 } from "aws-lambda";
-import { v4 } from "uuid";
+
+const client = new S3Client({});
 
 export const handler = async (
   event: APIGatewayProxyEvent,
   context: Context
 ) => {
-  const id = v4();
+  const command = new ListBucketsCommand();
+  const bucketList = await client.send(command);
+  const list = bucketList.Buckets?.map(
+    (b) => `${b.Name} - created at - ${b.CreationDate}`
+  );
   const result: APIGatewayProxyResult = {
     statusCode: 200,
     body: JSON.stringify({
-      message: `hello from ${process.env.TABLE_NAME} - ${id}`,
+      list
     }),
   };
-  console.log(`ID-${id}`);
   return result;
 };
