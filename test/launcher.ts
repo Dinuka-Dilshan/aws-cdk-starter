@@ -1,2 +1,2 @@
 import { handler } from "../src/services";
-handler({} as any, {} as any);
+handler({ httpMethod: "GET" } as any, {} as any);

@@ -4,7 +4,6 @@ import { ITable } from "aws-cdk-lib/aws-dynamodb";
 import { Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
-//import { LlrtFunction } from "cdk-lambda-llrt";
 import { Construct } from "constructs";
 import { join } from "path";
 
@@ -25,6 +24,7 @@ export class LambdaStack extends Stack {
         TABLE_NAME: props.table.tableName,
       },
     });
+
     this.lambdaIntegration = new LambdaIntegration(lambda);
 
     lambda.addToRolePolicy(
@@ -32,6 +32,14 @@ export class LambdaStack extends Stack {
         effect: Effect.ALLOW,
         actions: ["s3:ListAllMyBuckets", "s3:ListBucket"],
         resources: ["*"],
+      })
+    );
+
+    lambda.addToRolePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        resources: [props.table.tableArn],
+        actions: ["dynamodb:PutItem", "dynamodb:Scan"],
       })
     );
   }
