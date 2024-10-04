@@ -1,26 +1,24 @@
-import { ListBucketsCommand, S3Client } from "@aws-sdk/client-s3";
-import {
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult,
-  Context,
-} from "aws-lambda";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { APIGatewayProxyEvent, Context } from "aws-lambda";
+import { ApiResult } from "../utils/ApiResult";
+import { getHandler } from "./getHandler";
+import { postHandler } from "./postHandler";
 
-const client = new S3Client({});
+const ddbClient = new DynamoDBClient({});
 
 export const handler = async (
   event: APIGatewayProxyEvent,
   context: Context
 ) => {
-  const command = new ListBucketsCommand();
-  const bucketList = await client.send(command);
-  const list = bucketList.Buckets?.map(
-    (b) => `${b.Name} - created at - ${b.CreationDate}`
-  );
-  const result: APIGatewayProxyResult = {
-    statusCode: 200,
-    body: JSON.stringify({
-      list
-    }),
-  };
-  return result;
+  if (event.httpMethod === "GET") {
+    const result = await getHandler(event, ddbClient);
+    return result;
+  }
+
+  if (event.httpMethod === "POST") {
+    const result = await postHandler(event, ddbClient);
+    return result;
+  }
+
+  return new ApiResult().serverError().json({ message: "wrong endpoint" });
 };
