@@ -1,12 +1,8 @@
-import { DynamoDBClient, ScanCommand } from "@aws-sdk/client-dynamodb";
-import {
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult,
-  Context,
-} from "aws-lambda";
-import { v4 } from "uuid";
-import { SpaceItem } from "../../types";
-import { parseDbItemList } from "../utils/parseDbReult";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { APIGatewayProxyEvent, Context } from "aws-lambda";
+import { ApiResult } from "../utils/ApiResult";
+import { getHandler } from "./getHandler";
+import { postHandler } from "./postHandler";
 
 const ddbClient = new DynamoDBClient({});
 
@@ -14,16 +10,15 @@ export const handler = async (
   event: APIGatewayProxyEvent,
   context: Context
 ) => {
-  const location = event.queryStringParameters?.location ?? "";
-  const item: SpaceItem = { _id: v4(), location };
+  if (event.httpMethod === "GET") {
+    const result = await getHandler(event, ddbClient);
+    return result;
+  }
 
-  const dbResult = await ddbClient.send(
-    new ScanCommand({ TableName: process.env.TABLE_NAME })
-  );
-  console.log("-------", dbResult);
-  const result: APIGatewayProxyResult = {
-    statusCode: 200,
-    body: JSON.stringify(parseDbItemList(dbResult.Items)),
-  };
-  return result;
+  if (event.httpMethod === "POST") {
+    const result = await postHandler(event, ddbClient);
+    return result;
+  }
+
+  return new ApiResult().serverError().json({ message: "wrong endpoint" });
 };
