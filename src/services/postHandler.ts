@@ -1,8 +1,9 @@
 import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { marshall } from "@aws-sdk/util-dynamodb";
 import { APIGatewayProxyEvent } from "aws-lambda";
-import { v4 } from "uuid";
+import { randomUUID } from "crypto";
 import { TABLE_NAME } from "../constants/env";
+import { ApiError } from "../utils/ApiError";
 import { ApiResult } from "../utils/ApiResult";
 
 export const postHandler = async (
@@ -12,14 +13,14 @@ export const postHandler = async (
   const body = JSON.parse(event.body ?? "");
 
   if (!body?.location) {
-    return new ApiResult().badRequest("location cannot be empty").json({});
+    throw new ApiError("location cannot be empty");
   }
 
   try {
     await ddbClient.send(
       new PutItemCommand({
         TableName: TABLE_NAME,
-        Item: marshall({ _id: v4(), Location: body.location }),
+        Item: marshall({ _id: randomUUID(), Location: body.location }),
       })
     );
 
