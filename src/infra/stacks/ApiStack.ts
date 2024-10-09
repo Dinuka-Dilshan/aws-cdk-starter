@@ -29,7 +29,7 @@ export class ApiStack extends Stack {
         identitySource: "method.request.header.Authorization",
       }
     );
-
+    authorizer._attachToApi(api);
     const authOption: MethodOptions = {
       authorizer: {
         authorizerId: authorizer.authorizerId,

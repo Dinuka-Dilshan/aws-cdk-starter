@@ -1,3 +1,4 @@
 node_modules
+test/*
 cdk.out
 .vscode
