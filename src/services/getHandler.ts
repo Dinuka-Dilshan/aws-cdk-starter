@@ -26,7 +26,6 @@ const getItem = async (ddbClient: DynamoDBClient, id?: string) => {
     if (!resultItem.Item) {
       return new ApiResult().notFound("Item not found").json([]);
     }
-
     return new ApiResult().success().json(unmarshall(resultItem.Item));
   } catch (error) {
     return new ApiResult().serverError().json(error);

@@ -29,6 +29,7 @@ export class ApiResult {
   json(result: any) {
     return {
       statusCode: this.statusCode,
+      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({ data: result, error: this.error || null }),
     };
   }
