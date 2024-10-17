@@ -14,4 +14,5 @@ export class DataStack extends Stack {
       tableName: "SpaceTable",
     });
   }
+  
 }

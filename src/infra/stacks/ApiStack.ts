@@ -1,7 +1,8 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import {
   AuthorizationType,
   CognitoUserPoolsAuthorizer,
+  Cors,
   LambdaIntegration,
   MethodOptions,
   RestApi,
@@ -29,17 +30,28 @@ export class ApiStack extends Stack {
         identitySource: "method.request.header.Authorization",
       }
     );
-    authorizer._attachToApi(api);
+
     const authOption: MethodOptions = {
-      authorizer: {
-        authorizerId: authorizer.authorizerId,
-      },
+      authorizer,
       authorizationType: AuthorizationType.COGNITO,
     };
-    const spaces = api.root.addResource("spaces");
+
+    const spaces = api.root.addResource("spaces", {
+      defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: Cors.ALL_METHODS,
+        allowHeaders: ["*"],
+        allowCredentials: true,
+      },
+    });
     spaces.addMethod("GET", props.lambdaIntegration, authOption);
     spaces.addMethod("POST", props.lambdaIntegration, authOption);
     spaces.addMethod("PUT", props.lambdaIntegration, authOption);
     spaces.addMethod("DELETE", props.lambdaIntegration, authOption);
+
+    new CfnOutput(this, "api-endpoint", {
+      exportName: "spaceApiEndpoint",
+      value: api.url,
+    });
   }
 }

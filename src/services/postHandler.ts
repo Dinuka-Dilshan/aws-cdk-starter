@@ -12,19 +12,27 @@ export const postHandler = async (
 ) => {
   const body = JSON.parse(event.body ?? "");
 
-  if (!body?.location) {
-    throw new ApiError("location cannot be empty");
+  if (!body?.location || !body?.imageUrl) {
+    throw new ApiError("location and image url cannot be empty");
   }
+
+  const _id = randomUUID();
 
   try {
     await ddbClient.send(
       new PutItemCommand({
         TableName: TABLE_NAME,
-        Item: marshall({ _id: randomUUID(), Location: body.location }),
+        Item: marshall({
+          _id,
+          Location: body.location,
+          ImageUrl: body.imageUrl,
+        }),
       })
     );
 
-    return new ApiResult().success().json({ message: "Saved Successfully" });
+    return new ApiResult()
+      .success()
+      .json({ message: "Saved Successfully", _id });
   } catch (error) {
     return new ApiResult().serverError().json({});
   }
