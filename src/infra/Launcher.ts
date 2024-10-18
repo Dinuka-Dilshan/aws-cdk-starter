@@ -1,9 +1,12 @@
+import 'dotenv/config'
+
 import { App } from "aws-cdk-lib";
 import { ApiStack } from "./stacks/ApiStack";
 import { AuthStack } from "./stacks/authStack";
 import { DataStack } from "./stacks/DataStack";
 import { FileStack } from "./stacks/FileStack";
 import { LambdaStack } from "./stacks/LambdaStack";
+import { MonitorStack } from "./stacks/MonitorStack";
 import { UiDeploymentStack } from "./stacks/UiDeploymentStack";
 
 const app = new App();
@@ -18,3 +21,4 @@ new ApiStack(app, "ApiStack", {
   cognitoUserPool: authStack.userPool,
 });
 new UiDeploymentStack(app, "UiDdeployementStack");
+new MonitorStack(app, "MonitorStack");
