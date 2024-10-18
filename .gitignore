@@ -1,3 +1,5 @@
 node_modules
 cdk.out
 .vscode
+.env
+outputs.json
